@@ -1,0 +1,31 @@
+#!/bin/sh
+# Paul Miller
+# Uses GCC to compile and runC++11 source files.
+# ./compile <dir/file.cpp> ...
+
+# Compiles path/to/file.cpp to build/to/file
+# On success, it will run the file. 
+for file in $@
+do
+
+	# Get build dir
+	DIR=build/$(basename $(dirname $file .cpp))
+	# Build path with output name
+	OUT=$DIR/$(basename $file .cpp)
+	# If build dir does not exist, create dir
+	if [ ! -d $DIR ]; 
+	then
+		mkdir $DIR
+	fi
+	echo "Compiling $file ..."
+	if gcc -lstdc++ -std=c++11 $file -o $OUT;
+	then	
+		echo "Running $OUT ..."
+		set -v # prints during execution, echo on
+		./$OUT
+		unset -v # echo off
+	else
+		exit	
+	fi
+done;
+
