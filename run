@@ -1,6 +1,6 @@
 #!/bin/sh
 # Paul Miller
-# Uses GCC to compile and runC++11 source files.
+# Uses g++ to compile and runC++11 source files.
 # ./compile <dir/file.cpp> ...
 
 # Compiles path/to/file.cpp to build/to/file
@@ -18,7 +18,7 @@ do
 		mkdir $DIR
 	fi
 	echo "Compiling $file ..."
-	if gcc -lstdc++ -std=c++11 $file -o $OUT;
+	if g++ -std=c++11 $file -o $OUT;
 	then	
 		echo "Running $OUT ..."
 		set -v # prints during execution, echo on

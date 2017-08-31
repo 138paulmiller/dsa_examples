@@ -5,7 +5,7 @@ Compile:
 	or 
 	g++ inheritance_2.cpp -o inheritance_2
 Goals:
-	Understand class scopes in c++ as well as initialization lists.
+	Understand class friends and static variables.
 */
 #include <iostream>
 
