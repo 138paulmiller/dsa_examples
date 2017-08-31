@@ -2,7 +2,10 @@
 Various Examples of Data Structures and Algorithms (DSA) in C++
 
 These examples were created as supplementary information for the 
-Data Structures and Algorithms course at CSU Fullerton. 
+Data Structures and Algorithms course at CSU Fullerton. All files 
+are single file programs and do not practice a modular programming style.
+This repository is not designed to teach good programming styles and is
+only designed to reinforce various topics.
 
 #### Compiling
 It is recommended that a linux environent of shell emulator is used to compile and run files.

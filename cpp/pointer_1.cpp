@@ -81,8 +81,8 @@ main()
 	**pptr2 = 2;
 	print_ptrs("**pptr2 = 2")		
 
-	//delete all memory, 3 new calls, 3 delete calls
-
-	delete *pptr1;
+	//delete all memory currently pointed to
+	delete *pptr1; //same as delete ptr2
+	//delete ptr1; //why does this crash?
 	return 0;
 }

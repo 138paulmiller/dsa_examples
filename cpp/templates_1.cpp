@@ -24,14 +24,12 @@ public:
 private:
 	A a;
 	B b;
-
 };
 
 main()
 {
 	Foo<int, float>fooA(10, 11);
 	std::cout << '\n' <<fooA;
-
 
 	//Can you create an instance of Foo of type foo and int?
 	//Will this compile? If so, what will be the output?
