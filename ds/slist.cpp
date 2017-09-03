@@ -48,7 +48,7 @@ class SIterator
 		//move to next node
 		SIterator<T> operator++(); //prefix
 		SIterator<T> operator++(int ); //postfix
-
+		inline bool empty() {return node == 0;}
 	private:
 		SNode<T> *node;
 };
@@ -179,13 +179,13 @@ T SList<T>::pop_back()
 	while(temp)
 	{
  		//if next node is the back
-		if(temp->next == p_back)
+		if(temp->p_next == p_back)
 		{
 			p_back = temp;	
-			delete temp->next;
-			temp->next = 0;
+			delete temp->p_next;
+			temp->p_next = 0;
 		}				
-		temp = temp->next;
+		temp = temp->p_next;
 	}
 }
 
@@ -196,6 +196,30 @@ void print(const SList<T> &list)
 	for(SIterator<T> it = list.begin(); it != list.end(); it++)
 		std::cout << *it << ' ';
 }
+
+template <typename T>
+void print_middle(const SList<T> &list)
+{
+	std::cout << "\nList Middle:";
+	SIterator<T> mid = list.begin(); 
+	for(SIterator<T> it = list.begin(); ++it != list.end(); ++it)
+	{
+		mid++; 
+	}
+	std::cout << *mid << ' ';
+}
+
+template <typename T>
+void print_reverse(SIterator<T> it)
+{
+	if(! it.empty())
+	{
+		T val = *it;
+		print_reverse(++it);
+		std::cout << val << ' ';
+	}
+}
+
 
 main()
 {
@@ -211,7 +235,13 @@ main()
 	list.push_back(6);
 	list.push_front(1);
 	list.pop_front();
-	list.push_front(8);
+	list.pop_back();
+	list.push_front(1);
+	//prints
 	print(list);
+	print_middle(list);
+	std::cout << "\nList Reverse:";
+	print_reverse(list.begin());
+	
 	return 0;
 }
