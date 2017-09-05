@@ -8,12 +8,16 @@ Compile:
 
 Goal:
 	A very minimal singly linked list implementation. 
+TRY:	
+ 	By iterating over the list once:
+		find the middle of the list (HINT: use two pointers!)
+		print the nodes in reverse (HINT:recursion!)
 */
 
-//-------------------------------------Decls-------------------------------
+//-------------------------------------SNode Declaration-------------------------------
 
 #include <iostream>
-//forward declare list class
+//forward declare list class for Snode and Siterator Usage
 template <typename T>
 class SList; 
 
@@ -24,6 +28,7 @@ class SNode
 	public:
 		SNode(T value) :value(value), p_next(0){}
 		~SNode();
+		//Allows SIterator and Slist have access to node data
 		template <typename U>
 		friend class SList; 
 		template <typename U>
@@ -32,8 +37,8 @@ class SNode
 		T value;
 		SNode<T>* p_next; //pointer to next node 
 };
-
-//SList Iterator class to abstract node access
+//-------------------------------------SIterator Declaration-------------------------------
+//SList Iterator class to abstract node access, allows for easier usage
 template <typename T>
 class SIterator
 {
@@ -41,18 +46,19 @@ class SIterator
 		SIterator(): node(0){}
 		SIterator(SNode<T>* node): node(node){}
 		SIterator(const SIterator<T>& other): node(other.node){}
-		//dereferance operator to get access to pointer value
-		friend bool operator==(const SIterator<T>& l,const SIterator<T>& r) {return l.node == r.node;}
+		//Two iterators are equivalent if they point to the same node
+		friend bool operator==(const SIterator<T>& l,const SIterator<T>& r) {return l.node == r.node; }
 		friend bool operator!=(const SIterator<T>& l,const SIterator<T>& r) {return !(l.node == r.node);}				
+		//dereferance operator to get access to pointer value		
 		T& operator*();
 		//move to next node
-		SIterator<T> operator++(); //prefix
-		SIterator<T> operator++(int ); //postfix
+		SIterator<T> operator++(); //prefix, move node and return this
+		SIterator<T> operator++(int ); //postfix, save this, move node, return save
 		inline bool empty() {return node == 0;}
 	private:
 		SNode<T> *node;
 };
-
+//-------------------------------------SList Declaration-------------------------------
 //Singly-Linked list
 template <typename T>
 class SList
@@ -61,24 +67,19 @@ class SList
 		SList(): p_front(0), p_back(0), length(0) {}
 		SList(const SList & other);
 		~SList();
+		//Basic List Functions for inserting and removing data		
 		void push_front(T value);
 		T pop_front();
 		void push_back(T value);
 		T pop_back();
-
-		inline SIterator<T> begin() const 
-		{
-			return SIterator<T>(p_front);
-		}
-		inline SIterator<T> end() const 
-		{
-			if(p_back) return SIterator<T>(p_back->p_next);
-			return SIterator<T>();
-		}
+		//Accessors to iterators
+		inline SIterator<T> begin() const;
+		inline SIterator<T> end() const;
 	private:
 		SNode<T> *p_front, *p_back; //pointer to front and back node
 		int length;
 };
+//----------------------------------SNode Defs-------------------------------------------
 template <typename T>
 SNode<T>::~SNode()
 {
@@ -87,7 +88,7 @@ SNode<T>::~SNode()
 	if(p_next) delete p_next;
 }
 
-//----------------------------------Iterator Defs-------------------------------------------
+//----------------------------------SIterator Defs-------------------------------------------
 template <typename T>
 T& SIterator<T>::operator*()
 {
@@ -112,7 +113,7 @@ SIterator<T> SIterator<T>::operator++(int)
 		node=node->p_next;
 	return prev; //return current instance
 } 
-//----------------------------------List Defs-------------------------------------------
+//----------------------------------SList Defs-------------------------------------------
 template <typename T>
 SList<T>::SList(const SList & other)
 {
@@ -120,6 +121,7 @@ SList<T>::SList(const SList & other)
 	for(SIterator<T> it = other.begin(); it != other.end(); it++)
 		this->push_back(*it);		
 }
+
 template <typename T>
 SList<T>::~SList()
 {
@@ -127,6 +129,18 @@ SList<T>::~SList()
 		delete p_front; 
 }
 
+template <typename T>
+SIterator<T> SList<T>::begin() const 
+{
+	return SIterator<T>(p_front);
+}
+
+template <typename T>
+SIterator<T> SList<T>::end() const 
+{
+	if(p_back) return SIterator<T>(p_back->p_next);
+	return SIterator<T>();
+}
 template <typename T>
 void SList<T>::push_front(T value)
 {
@@ -188,7 +202,7 @@ T SList<T>::pop_back()
 		temp = temp->p_next;
 	}
 }
-
+//------------------------------------------Misc Utilities-----------------------------
 template <typename T>
 void print(const SList<T> &list)
 {
@@ -197,14 +211,67 @@ void print(const SList<T> &list)
 		std::cout << *it << ' ';
 }
 
+//Defined after main to avoid spoiling solution.
+template <typename T>
+void print_middle(const SList<T> &list);
+template <typename T>
+void print_reverse(SIterator<T> it);
+//-----------------------------------------Main -------------------------------------
+main()
+{
+
+	SList<int> list;
+
+	for(int i = 0; i < 5; i++)
+	{
+		list.push_back(i);
+		list.push_front(i+15);
+		list.push_front(i+30);
+
+	}
+	for(int i = 0; i < 3; i++)
+	{
+		list.pop_front();
+		list.pop_back();
+	}
+	print(list);
+	print_middle(list);
+	std::cout << "\nList Reverse:";
+	print_reverse(list.begin());
+	
+	return 0;
+}
+
+
+//---------------------------------Solutions---------------------------------------
 template <typename T>
 void print_middle(const SList<T> &list)
 {
 	std::cout << "\nList Middle:";
-	SIterator<T> mid = list.begin(); 
-	for(SIterator<T> it = list.begin(); ++it != list.end(); ++it)
+	SIterator<T> mid = list.begin();  //
+	/*
+		Solution 1:
+		The for loop moves the iterator twice before entering body,
+		when the body is entered the mid only moves once. 
+		So, for every two moves, mid moves once meaning mid moves 
+		half as slow! Mid Starts at beginning so start it at the next.
+	*/
+/*
+	for(SIterator<T> it = ++list.begin(); it != list.end(); ++it, ++it)//iterates 
 	{
 		mid++; 
+	}
+*/
+	/*
+		Another way to iterate mid half as often as the iterator.
+		How could this be modified to have i start at 0?
+	*/
+	int i =-1; //why start at -1?
+	for(SIterator<T> it = list.begin(); it != list.end(); ++it, i++) //iterates n times!
+	{
+		//if i is even
+		if(i%2==0)
+			mid++; 
 	}
 	std::cout << *mid << ' ';
 }
@@ -220,28 +287,3 @@ void print_reverse(SIterator<T> it)
 	}
 }
 
-
-main()
-{
-	//TRY:	
-	// By iterating over the list once:
-	//	find the middle of the list (use two pointers!)
-	//	print the nodes in reverse
-	SList<int> list;
-	list.push_back(4);
-	list.push_back(5);
-	list.push_front(3);
-	list.push_front(2);
-	list.push_back(6);
-	list.push_front(1);
-	list.pop_front();
-	list.pop_back();
-	list.push_front(1);
-	//prints
-	print(list);
-	print_middle(list);
-	std::cout << "\nList Reverse:";
-	print_reverse(list.begin());
-	
-	return 0;
-}
