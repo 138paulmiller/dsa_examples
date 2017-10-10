@@ -67,14 +67,21 @@ class SList
 		SList(): p_front(0), p_back(0), length(0) {}
 		SList(const SList & other);
 		~SList();
-		//Basic List Functions for inserting and removing data		
+		inline bool is_empty() {return p_front == 0;} 
+		//Basic List Functions for inserting and removing data	
+		void insert_at(T value, int pos);	
 		void push_front(T value);
 		T pop_front();
 		void push_back(T value);
 		T pop_back();
+		void swap(T a_val, T b_val);
+
 		//Accessors to iterators
 		inline SIterator<T> begin() const;
 		inline SIterator<T> end() const;
+
+	protected:
+		SNode<T>* find_prev_ptr(T value);
 	private:
 		SNode<T> *p_front, *p_back; //pointer to front and back node
 		int length;
@@ -141,6 +148,98 @@ SIterator<T> SList<T>::end() const
 	if(p_back) return SIterator<T>(p_back->p_next);
 	return SIterator<T>();
 }
+
+template <typename T>
+SNode<T>* SList<T>::find_prev_ptr(T value)
+{
+	SNode<T>* temp = p_front;
+	if(temp)
+	{
+		if(temp->value == value)
+			return 0; //head
+		while(temp->p_next && temp->p_next->value != value)
+			temp = temp->p_next;
+		//if(temp || temp->data != value)
+		//	temp = 0;
+	}
+	return temp;
+}
+
+
+template <typename T>
+void SList<T>::swap(T a_val, T b_val)
+{
+	if(is_empty()) return;
+	//Pointers and cases are explicitly labled, to visualize draw it out step by step!
+	SNode<T> *a_prev = find_prev_ptr(a_val),
+			*b_prev = find_prev_ptr(b_val);
+	SNode<T> * a, *b, *temp;
+	
+	if(!a_prev && a_val == p_front->value)
+		a = p_front;
+	else if(a_prev)
+		a = a_prev->p_next;
+	else
+	{
+		std::cout << "\nswap: A not found!";
+		return ; //no a!
+	}
+
+	if(!b_prev && b_val == p_front->value)
+		b = p_front;
+	else if(b_prev)
+		b = b_prev->p_next;
+	else
+	{
+		std::cout << "\nswap: B not found!";
+		return ; //no b!
+	}
+	if(b_prev)
+		b_prev->p_next = a;
+	if(a_prev)
+		a_prev->p_next = b;
+
+	temp = a->p_next;
+	a->p_next= b->p_next;
+	b->p_next = temp;
+	
+	//update front 
+	if(a == p_front)
+		p_front = b;
+	else if(b == p_front)
+		 p_front = a;
+	if(a == p_back) 
+	 	p_back = b;
+	else if(b == p_back)
+	 	p_back = a;
+	
+}
+
+template <typename T>
+void SList<T>::insert_at(T value, int pos)
+{
+	if (pos == 0)
+	{
+		push_front(value);
+	}
+	else if(pos == length)
+	{
+		push_back(value);
+	}
+	else if(pos < length)
+	{
+		
+		SNode<T> * temp = p_front;
+		SNode<T> *new_node = new SNode<T>(value);
+		for(int i=0; i < pos-1;i++)
+			temp = temp->p_next;
+		new_node->p_next = temp->p_next;
+		temp->p_next = new_node;
+		length++;
+	}
+
+}
+
 template <typename T>
 void SList<T>::push_front(T value)
 {
@@ -160,6 +259,7 @@ T SList<T>::pop_front()
 {
 	if(p_front)
 	{
+		length --;
 		//point to old front
 		SNode<T> * temp = p_front;
 		//move front to the next node
@@ -200,6 +300,7 @@ T SList<T>::pop_back()
 			temp->p_next = 0;
 		}				
 		temp = temp->p_next;
+		length --;
 	}
 }
 //------------------------------------------Misc Utilities-----------------------------
@@ -221,19 +322,37 @@ main()
 {
 
 	SList<int> list;
+	list.insert_at(1, 0);
+	list.insert_at(2, 1);
+	list.insert_at(3, 1);
+	list.insert_at(4, 3);
+	list.insert_at(0, 0);
+	list.insert_at(9, 5);
+	
+	print(list);
+	std::cout << "\n0 <--> 4";
+	list.swap(0, 4);
+	print(list);
+	std::cin.get();
+	std::cout << "\n3 <--> 9";
+	list.swap(3, 9);
+	print(list);
+	std::cout << "\n3 <--> 4";
+	list.swap(3, 4);
+	std::cin.get();
 
-	for(int i = 0; i < 5; i++)
-	{
-		list.push_back(i);
-		list.push_front(i+15);
-		list.push_front(i+30);
+	// for(int i = 0; i < 5; i++)
+	// {
+	// 	list.push_back(i);
+	// 	list.push_front(i+15);
+	// 	list.push_front(i+30);
 
-	}
-	for(int i = 0; i < 3; i++)
-	{
-		list.pop_front();
-		list.pop_back();
-	}
+	// }
+	// for(int i = 0; i < 3; i++)
+	// {
+	// 	list.pop_front();
+	// 	list.pop_back();
+	// }
 	print(list);
 	print_middle(list);
 	std::cout << "\nList Reverse:";
