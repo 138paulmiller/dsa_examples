@@ -14,8 +14,3 @@ This repo comes packaged with a run script that will compile and run the given s
 	cd path/to/dsa_examples
 	//run the files
 	./run cpp/pointer_1.cpp algo/memoization_1.cpp
-
-#### Contribution
-If you believe that you can either fix incorrections, add new examples or topics:
-First branch the repository into your account. After the changes are made please 
-then create a merge request.
